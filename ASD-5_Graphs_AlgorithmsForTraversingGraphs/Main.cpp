@@ -21,19 +21,19 @@ template <typename T>
 class Vertex {
 private:
 	variant<T, int> vertex;
-	vector<pair<T, int>> vertNeighbors;
+	vector<pair<variant<T, int>, int>> vertNeighbors;
 public:
-	Vertex(const T& vertex) : vertex(vertex), vertNeighbors() {};
-	void AddNeighbor(const T&, const int&);
+	Vertex(const variant<T, int>& vertex) : vertex(vertex), vertNeighbors() {};
+	void AddNeighbor(const variant<T, int>&, const int&);
 	void ShowNeighbor();
-	T GetVertName() { return this->vertex; };
-	vector<T> GetNeighbor();
+	variant<T, int> GetVertName() { return this->vertex; };
+	vector<variant<T, int>> GetNeighbor();
 	bool operator==(const Vertex& other) { return this->vertex == other.vertex; }
-	bool operator==(const T& other) { return this->vertex == other; }
+	bool operator==(const variant<T, int>& other) { return this->vertex == other; }
 };
 
 template <typename T>
-void Vertex<T>::AddNeighbor(const T& vertex, const int& weight) {
+void Vertex<T>::AddNeighbor(const variant<T, int>& vertex, const int& weight) {
 
 	this->vertNeighbors.emplace_back(vertex, weight);
 }
@@ -41,16 +41,19 @@ void Vertex<T>::AddNeighbor(const T& vertex, const int& weight) {
 template <typename T>
 void Vertex<T>::ShowNeighbor() {
 
-	cout << "vertex " << this->vertex << " : ";
+	cout << "vertex ";
+	visit([](auto&& val) { cout << val; }, this->vertex);
+	cout << " : ";
 	for (auto v : this->vertNeighbors) {
-		cout << v.first << "(" << v.second << ") ";
+		visit([](auto&& val) { cout << val; }, v.first);
+		cout << "(" << v.second << ") ";
 	}cout << endl;
 }
 
 template <typename T>
-vector<T> Vertex<T>::GetNeighbor() {
+vector<variant<T, int>> Vertex<T>::GetNeighbor() {
 
-	vector<T> neighbour;
+	vector<variant<T, int>> neighbour;
 	for (auto v : this->vertNeighbors) {
 		neighbour.push_back(v.first);
 	}
@@ -66,20 +69,20 @@ private:
 public:
 	Graph() : isOriented(false), vertexN(0), listAdjacency() {};
 	Graph(const bool& isOriented) : isOriented(isOriented), vertexN(0), listAdjacency() {};
-	void AddEdge(const T&, const T&, const int&);
-	void AddVertex(const T&);
+	void AddEdge(const variant<T, int>&, const variant<T, int>&, const int&);
+	void AddVertex(const variant<T, int>&);
 	void ShowVertexes();
-	void DepthFirstSearch(const T&);
-	void DFShelper(vector<T>&, const T&);
-	void BreadthFirstSearch(const T&);
-	void DepthFirstSearchStack(const T&);
-	void BuildDFSForest(vector<T>&);
-	void MinimumPathBetweenVerts(const T&, const T&);
-	void TaskB(const T&);
+	void DepthFirstSearch(const variant<T, int>&);
+	void DFShelper(vector<variant<T, int>>&, const variant<T, int>&);
+	void BreadthFirstSearch(const variant<T, int>&);
+	void DepthFirstSearchStack(const variant<T, int>&);
+	void BuildDFSForest(vector<variant<T, int>>&);
+	void MinimumPathBetweenVerts(const variant<T, int>&, const variant<T, int>&);
+	void Task2B(const variant<T, int>&);
 };
 
 template <typename T>
-void Graph<T>::AddVertex(const T& vertex) {
+void Graph<T>::AddVertex(const variant<T, int>& vertex) {
 
 	auto new_vertex = Vertex(vertex);
 	if (find(this->listAdjacency.begin(), this->listAdjacency.end(), new_vertex) != this->listAdjacency.end()) return;
@@ -100,7 +103,7 @@ void Graph<T>::ShowVertexes() {
 }
 
 template <typename T>
-void Graph<T>::AddEdge(const T& fVertex, const T& sVertex, const int& weight) {
+void Graph<T>::AddEdge(const variant<T, int>& fVertex, const variant<T, int>& sVertex, const int& weight) {
 
 	this->AddVertex(fVertex);
 	this->AddVertex(sVertex);
@@ -118,19 +121,19 @@ void Graph<T>::AddEdge(const T& fVertex, const T& sVertex, const int& weight) {
 }
 
 template <typename T>
-void Graph<T>::DepthFirstSearch(const T& sVertex) {
+void Graph<T>::DepthFirstSearch(const variant<T, int>& sVertex) {
 
-	vector<T> visitedVerts;
+	vector<variant<T, int>> visitedVerts;
 	this->DFShelper(visitedVerts, sVertex);
 	cout << "Sequence of traversal of vertices in a graph (by DFS) : " << endl;
 	for (auto travel : visitedVerts) {
-		cout << travel << "->";
+		visit([](auto&& val) { cout << val << "->"; }, travel);
 	}cout << endl;
 	this->BuildDFSForest(visitedVerts);
 }
 
 template <typename T>
-void Graph<T>::DFShelper(vector<T>& visited, const T& sVertex) {
+void Graph<T>::DFShelper(vector<variant<T, int>>& visited, const variant<T, int>& sVertex) {
 
 	auto it = find(this->listAdjacency.begin(), this->listAdjacency.end(), sVertex);
 	if (it != this->listAdjacency.end()) {
@@ -146,12 +149,12 @@ void Graph<T>::DFShelper(vector<T>& visited, const T& sVertex) {
 }
 
 template <typename T>
-void Graph<T>::BreadthFirstSearch(const T& sVertex) {
+void Graph<T>::BreadthFirstSearch(const variant<T, int>& sVertex) {
 
-	vector<T> visitedVerts;
-	queue<T> q;
-	T currentElem;
-	unordered_map<T, vector<T>> bfsTree;
+	vector<variant<T, int>> visitedVerts;
+	queue<variant<T, int>> q;
+	variant<T, int> currentElem;
+	unordered_map<variant<T, int>, vector<variant<T, int>>> bfsTree;
 
 	q.push(sVertex);
 	visitedVerts.push_back(sVertex);
@@ -173,23 +176,23 @@ void Graph<T>::BreadthFirstSearch(const T& sVertex) {
 	}
 	cout << "Sequence of traversal of vertices in a graph (by BFS) : " << endl;
 	for (auto travel : visitedVerts) {
-		cout << travel << "->";
+		visit([](auto&& val) {cout << val << "->"; }, travel);
 	}cout << endl;
 	cout << "BFS Tree: " << endl;
 	for (auto [parent, children] : bfsTree) {
-		cout << parent << ": ";
+		visit([](auto&& val) {cout << val << ": "; }, parent);		
 		for (auto child : children) {
-			cout << child << " ";
+			visit([](auto&& val) {cout << val << " "; }, child);
 		}cout << endl;
 	}
 }
 
 template <typename T>
-void Graph<T>::DepthFirstSearchStack(const T& sVertex) {
+void Graph<T>::DepthFirstSearchStack(const variant<T, int>& sVertex) {
 
-	vector<T> visitedVerts;
-	stack<T> s;	
-	T currentElem;
+	vector<variant<T, int>> visitedVerts;
+	stack<variant<T, int>> s;	
+	variant<T, int> currentElem;
 	s.push(sVertex);
 	while (!s.empty()) {
 		currentElem = s.top();
@@ -199,7 +202,7 @@ void Graph<T>::DepthFirstSearchStack(const T& sVertex) {
 			visitedVerts.push_back(currentElem);
 			auto it = find(this->listAdjacency.begin(), this->listAdjacency.end(), currentElem);
 			if (it != this->listAdjacency.end()) {
-				vector<T> neighbours = it->GetNeighbor();
+				vector<variant<T, int>> neighbours = it->GetNeighbor();
 				reverse(neighbours.begin(), neighbours.end());
 				for (auto& neighbour : neighbours) {
 					auto isConsist = find(visitedVerts.begin(), visitedVerts.end(), neighbour);
@@ -213,23 +216,23 @@ void Graph<T>::DepthFirstSearchStack(const T& sVertex) {
 	}
 	cout << "Sequence of traversal of vertices in a graph (by DFS_stack) : " << endl;
 	for (auto travel : visitedVerts) {
-		cout << travel << "->";
+		visit([](auto&& val) {cout << val << "->"; }, travel);
 	}cout << endl;
 	this->BuildDFSForest(visitedVerts);
 }
 
 template <typename T>
-void Graph<T>::BuildDFSForest(vector<T>& visitedVerts) {
+void Graph<T>::BuildDFSForest(vector<variant<T, int>>& visitedVerts) {
 
-	vector<vector<T>> dfsForest;
+	vector<vector<variant<T, int>>> dfsForest;
 	dfsForest.push_back(visitedVerts);
 	for (auto v : this->listAdjacency) {
 		auto finder = find(visitedVerts.begin(), visitedVerts.end(), v.GetVertName());
 		if (finder == visitedVerts.end()) {
-			vector<T> difVisitedVerts(visitedVerts);
+			vector<variant<T, int>> difVisitedVerts(visitedVerts);
 			DFShelper(difVisitedVerts, v.GetVertName());
-			unordered_set<T> set2(visitedVerts.begin(), visitedVerts.end());
-			difVisitedVerts.erase(remove_if(difVisitedVerts.begin(), difVisitedVerts.end(), [&set2](T x) { return set2.find(x) != set2.end(); }), difVisitedVerts.end());
+			unordered_set<variant<T, int>> set2(visitedVerts.begin(), visitedVerts.end());
+			difVisitedVerts.erase(remove_if(difVisitedVerts.begin(), difVisitedVerts.end(), [&set2](variant<T, int> x) { return set2.find(x) != set2.end(); }), difVisitedVerts.end());
 			dfsForest.push_back(difVisitedVerts);
 			for (auto i : difVisitedVerts) { visitedVerts.push_back(i); }
 		}
@@ -238,19 +241,19 @@ void Graph<T>::BuildDFSForest(vector<T>& visitedVerts) {
 	for (auto tree : dfsForest) {
 		cout << "Tree: ";
 		for (auto v : tree) {
-			cout << v << " ";
+			visit([](auto&& val) {cout << val << " "; }, v);
 		}cout << endl;
 	}	
 }
 
 template <typename T>
-void Graph<T>::MinimumPathBetweenVerts(const T& sVert, const T& eVert) {
+void Graph<T>::MinimumPathBetweenVerts(const variant<T, int>& sVert, const variant<T, int>& eVert) {
 
 	if (sVert == eVert) throw "Error: <Start vert and End vert is equal>";
-	vector<T> visitedVerts;
-	queue<T> q;
-	T currentElem;
-	unordered_map<T, T> pathParrent;
+	vector<variant<T, int>> visitedVerts;
+	queue<variant<T, int>> q;
+	variant<T, int> currentElem;
+	unordered_map<variant<T, int>, variant<T, int>> pathParrent;
 	
 	q.push(sVert);
 	visitedVerts.push_back(sVert);
@@ -272,7 +275,7 @@ void Graph<T>::MinimumPathBetweenVerts(const T& sVert, const T& eVert) {
 		else throw "Error: <The current Vertex doesn't contain in the Graph>";
 	}
 	if (pathParrent.find(eVert) != pathParrent.end()) {
-		stack<T> s;
+		stack<variant<T, int>> s;
 		currentElem = eVert;
 		while (true) {
 			s.push(currentElem);
@@ -280,18 +283,17 @@ void Graph<T>::MinimumPathBetweenVerts(const T& sVert, const T& eVert) {
 			currentElem = pathParrent[currentElem];
 		}
 		cout << "The path lenght is " << s.size() - 1 << endl;
-		cout << "The path from " << ANSI_COLOR_GREEN << sVert << ANSI_COLOR_RESET << " to " << ANSI_COLOR_BLUE << eVert << ANSI_COLOR_RESET << " : " << endl;
+		visit([](auto&& val, auto&& val2) { cout << "The path from " << ANSI_COLOR_GREEN << val << ANSI_COLOR_RESET << " to " << ANSI_COLOR_BLUE << val2 << ANSI_COLOR_RESET << " : " << endl; }, sVert, eVert);
 		while (!s.empty()) {
-			cout << s.top() << "->";
+			visit([](auto&& val) {cout << val << "->"; }, s.top());
 			s.pop();
 		}cout << endl;
 	}
-	else cout << ANSI_COLOR_RED << "The path didn't find from " << sVert << " to " << eVert << ANSI_COLOR_RESET << endl;
-
+	else visit([](auto&& val, auto&& val2) {cout << ANSI_COLOR_RED << "The path didn't find from " << val << " to " << val2 << ANSI_COLOR_RESET << endl; }, sVert, eVert);
 }
 
 template <typename T>
-void Graph<T>::TaskB(const T& sVertex) {
+void Graph<T>::Task2B(const variant<T, int>& sVertex) {
 
 	this->DepthFirstSearchStack(sVertex);
 
@@ -299,7 +301,7 @@ void Graph<T>::TaskB(const T& sVertex) {
 
 int main() {
 
-	Graph<int> g(true);
+	/*Graph<int> g(true);
 	g.AddEdge(1, 2, 1);
 	g.AddEdge(1, 3, 1);
 	g.AddEdge(1, 4, 1);
@@ -310,15 +312,16 @@ int main() {
 	g.AddEdge(4, 3, 1);
 	g.AddEdge(4, 6, 1);
 	g.AddEdge(5, 4, 1);
-	g.AddEdge(5, 6, 1);
+	g.AddEdge(5, 6, 1);*/
 	//g.ShowVertexes();
 	
 	Graph<string> g2(true);
-	g2.AddEdge("A", "C", 0);
-	g2.AddEdge("A", "F", 0);
-	g2.AddEdge("C", "D", 0);
-	g2.AddEdge("D", "B", 0);
-	g2.AddEdge("E", "F", 0);
+	g2.AddEdge("A", "C", 1);
+	g2.AddEdge("A", "F", 1);
+	g2.AddEdge("C", "D", 1);
+	g2.AddEdge("D", "B", 1);
+	g2.AddEdge("E", "F", 1);
+	g2.AddEdge("E", "5", 1);
 	g2.ShowVertexes();
 
 	try {
@@ -326,13 +329,13 @@ int main() {
 		//g.DepthFirstSearch(5);
 		//g.DepthFirstSearch(4);
 		//g.DepthFirstSearch(2);
-		//g2.DepthFirstSearch("C");
-		//g2.DepthFirstSearchStack("C");
+		g2.DepthFirstSearch("C");
+		g2.DepthFirstSearchStack("C");
 		//g.DepthFirstSearchStack(1);
 		//g.BreadthFirstSearch(1);
-		//g2.BreadthFirstSearch("A");
-		//g2.MinimumPathBetweenVerts("A", "D");
-		g2.TaskB("A");
+		g2.BreadthFirstSearch("A");
+		g2.MinimumPathBetweenVerts("A", "D");
+		g2.Task2B("A");
 	}
 	catch (const char* err) {
 		cerr << err << endl;
