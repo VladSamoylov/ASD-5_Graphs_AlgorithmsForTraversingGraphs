@@ -5,6 +5,12 @@
 #include <algorithm>
 #include <queue>
 #include <stack>
+#include <variant>
+
+#define ANSI_COLOR_BLUE "\033[34m"
+#define ANSI_COLOR_RESET "\033[0m"
+#define ANSI_COLOR_GREEN "\033[32m"
+#define ANSI_COLOR_RED "\033[31m"
 
 using namespace std;
 
@@ -14,7 +20,7 @@ class Graph;
 template <typename T>
 class Vertex {
 private:
-	T vertex;
+	variant<T, int> vertex;
 	vector<pair<T, int>> vertNeighbors;
 public:
 	Vertex(const T& vertex) : vertex(vertex), vertNeighbors() {};
@@ -68,6 +74,8 @@ public:
 	void BreadthFirstSearch(const T&);
 	void DepthFirstSearchStack(const T&);
 	void BuildDFSForest(vector<T>&);
+	void MinimumPathBetweenVerts(const T&, const T&);
+	void TaskB(const T&);
 };
 
 template <typename T>
@@ -235,6 +243,60 @@ void Graph<T>::BuildDFSForest(vector<T>& visitedVerts) {
 	}	
 }
 
+template <typename T>
+void Graph<T>::MinimumPathBetweenVerts(const T& sVert, const T& eVert) {
+
+	if (sVert == eVert) throw "Error: <Start vert and End vert is equal>";
+	vector<T> visitedVerts;
+	queue<T> q;
+	T currentElem;
+	unordered_map<T, T> pathParrent;
+	
+	q.push(sVert);
+	visitedVerts.push_back(sVert);
+	while (!q.empty()) {
+		currentElem = q.front();
+		q.pop();
+		if (currentElem == eVert) break;
+		auto it = find(this->listAdjacency.begin(), this->listAdjacency.end(), currentElem);
+		if (it != this->listAdjacency.end()) {
+			for (auto neighbour : it->GetNeighbor()) {
+				auto isConsist = find(visitedVerts.begin(), visitedVerts.end(), neighbour);
+				if (isConsist == visitedVerts.end()) {
+					q.push(neighbour);
+					visitedVerts.push_back(neighbour);
+					pathParrent[neighbour] = currentElem;
+				}
+			}
+		}
+		else throw "Error: <The current Vertex doesn't contain in the Graph>";
+	}
+	if (pathParrent.find(eVert) != pathParrent.end()) {
+		stack<T> s;
+		currentElem = eVert;
+		while (true) {
+			s.push(currentElem);
+			if (currentElem == sVert) break;
+			currentElem = pathParrent[currentElem];
+		}
+		cout << "The path lenght is " << s.size() - 1 << endl;
+		cout << "The path from " << ANSI_COLOR_GREEN << sVert << ANSI_COLOR_RESET << " to " << ANSI_COLOR_BLUE << eVert << ANSI_COLOR_RESET << " : " << endl;
+		while (!s.empty()) {
+			cout << s.top() << "->";
+			s.pop();
+		}cout << endl;
+	}
+	else cout << ANSI_COLOR_RED << "The path didn't find from " << sVert << " to " << eVert << ANSI_COLOR_RESET << endl;
+
+}
+
+template <typename T>
+void Graph<T>::TaskB(const T& sVertex) {
+
+	this->DepthFirstSearchStack(sVertex);
+
+}
+
 int main() {
 
 	Graph<int> g(true);
@@ -268,7 +330,9 @@ int main() {
 		//g2.DepthFirstSearchStack("C");
 		//g.DepthFirstSearchStack(1);
 		//g.BreadthFirstSearch(1);
-		g2.BreadthFirstSearch("A");
+		//g2.BreadthFirstSearch("A");
+		//g2.MinimumPathBetweenVerts("A", "D");
+		g2.TaskB("A");
 	}
 	catch (const char* err) {
 		cerr << err << endl;
