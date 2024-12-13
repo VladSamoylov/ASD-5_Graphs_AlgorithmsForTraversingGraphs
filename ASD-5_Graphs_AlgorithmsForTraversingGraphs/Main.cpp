@@ -8,6 +8,7 @@
 #include <variant>
 #include <fstream>
 #include <string>
+#include <iomanip>
 
 #define ANSI_COLOR_BLUE "\033[34m"
 #define ANSI_COLOR_RESET "\033[0m"
@@ -38,12 +39,23 @@ public:
 	bool operator==(const variant<T, int>& other) { return this->vertex == other; }
 };
 
+/**
+ * @brief Метод додавання суміжної вершини
+ * @tparam T Заповнювач типу даних
+ * @param vertex Назва суміжної вершини
+ * @param weight Вага суміжної вершини
+ */
 template <typename T>
 void Vertex<T>::AddNeighbor(const variant<T, int>& vertex, const int& weight) {
 
 	this->vertNeighbors.emplace_back(vertex, weight);
 }
 
+/**
+ * @brief Метод зміни назв суміжних вершин
+ * @tparam T Заповнювач типу даних
+ * @param newName Нові ім'я суміжних вершин
+ */
 template <typename T>
 void Vertex<T>::SetNameNeighbor(const vector<variant<T, int>>& newName) {
 
@@ -54,6 +66,10 @@ void Vertex<T>::SetNameNeighbor(const vector<variant<T, int>>& newName) {
 	}
 }
 
+/**
+ * @brief Метод виведення суміжних вершин
+ * @tparam T Заповнювач типу даних
+ */
 template <typename T>
 void Vertex<T>::ShowNeighbor() {
 
@@ -66,6 +82,11 @@ void Vertex<T>::ShowNeighbor() {
 	}cout << endl;
 }
 
+/**
+ * @brief Метод отримання списку суміжних вершин
+ * @tparam T Заповнювач типу даних
+ * @return Список суміжних вершин
+ */
 template <typename T>
 vector<variant<T, int>> Vertex<T>::GetNeighbor() {
 
@@ -88,6 +109,7 @@ public:
 	void AddEdge(const variant<T, int>&, const variant<T, int>&, const int&);
 	void AddVertex(const variant<T, int>&);
 	void ShowVertexes();
+	int GetAmountVertex() { return this->vertexN; }
 	bool isPresentEdge(const variant<T, int>&, const variant<T, int>&);
 	vector<Vertex<T>> GetListAdjacency() { return this->listAdjacency; }
 	void DepthFirstSearch(const variant<T, int>&);
@@ -100,6 +122,11 @@ public:
 	void ClearDataGraph() { this->vertexN = 0; this->listAdjacency.clear(); }
 };
 
+/**
+ * @brief Метод додавання вершини
+ * @tparam T Заповнювач типу даних
+ * @param vertex Ім'я вершини
+ */
 template <typename T>
 void Graph<T>::AddVertex(const variant<T, int>& vertex) {
 
@@ -109,6 +136,13 @@ void Graph<T>::AddVertex(const variant<T, int>& vertex) {
 	this->vertexN++;
 }
 
+/**
+ * @brief Метод перевірки існування ребра графа
+ * @tparam T Заповнювач типу даних
+ * @param fVert Перша вершина
+ * @param sVert Друга вершина
+ * @return True ребро існує, інакше - false
+ */
 template <typename T>
 bool Graph<T>::isPresentEdge(const variant<T, int>& fVert, const variant<T, int>& sVert) {
 
@@ -122,6 +156,10 @@ bool Graph<T>::isPresentEdge(const variant<T, int>& fVert, const variant<T, int>
 	return false;
 }
 
+/**
+ * @brief Метод відображення списку суміжності
+ * @tparam T Заповнювач типу даних
+ */
 template <typename T>
 void Graph<T>::ShowVertexes() {
 
@@ -134,6 +172,13 @@ void Graph<T>::ShowVertexes() {
 	}cout << endl;
 }
 
+/**
+ * @brief Метод додавання ребра графа
+ * @tparam T Заповнювач типу даних
+ * @param fVertex Перша вершина
+ * @param sVertex Друга вершина
+ * @param weight Вага ребра
+ */
 template <typename T>
 void Graph<T>::AddEdge(const variant<T, int>& fVertex, const variant<T, int>& sVertex, const int& weight) {
 
@@ -153,6 +198,11 @@ void Graph<T>::AddEdge(const variant<T, int>& fVertex, const variant<T, int>& sV
 	}
 }
 
+/**
+ * @brief Метод пошуку в глибину з використанням рекурсії
+ * @tparam T Заповнювач типу даних
+ * @param sVertex Початкова вершина
+ */
 template <typename T>
 void Graph<T>::DepthFirstSearch(const variant<T, int>& sVertex) {
 
@@ -165,6 +215,12 @@ void Graph<T>::DepthFirstSearch(const variant<T, int>& sVertex) {
 	this->BuildDFSForest(visitedVerts);
 }
 
+/**
+ * @brief Метод рекурсія для пошуку в глибину
+ * @tparam T Заповнювач типу даних
+ * @param visited Список відвіданих вершин
+ * @param sVertex Початкова вершина
+ */
 template <typename T>
 void Graph<T>::DFShelper(vector<variant<T, int>>& visited, const variant<T, int>& sVertex) {
 
@@ -181,6 +237,11 @@ void Graph<T>::DFShelper(vector<variant<T, int>>& visited, const variant<T, int>
 	else throw "Error: <The current Vertex doesn't contain in the Graph>";
 }
 
+/**
+ * @brief Метод пошуку в ширину і побудова дерева пошибку в глибину
+ * @tparam T Заповнювач типу даних 
+ * @param sVertex Початкова вершина
+ */
 template <typename T>
 void Graph<T>::BreadthFirstSearch(const variant<T, int>& sVertex) {
 
@@ -220,6 +281,11 @@ void Graph<T>::BreadthFirstSearch(const variant<T, int>& sVertex) {
 	}
 }
 
+/**
+ * @brief Метод пошуку в глибину з використанням структури даних стек
+ * @tparam T Заповнювач типу даних 
+ * @param sVertex Початкова вершина
+ */
 template <typename T>
 void Graph<T>::DepthFirstSearchStack(const variant<T, int>& sVertex) {
 
@@ -254,6 +320,11 @@ void Graph<T>::DepthFirstSearchStack(const variant<T, int>& sVertex) {
 	this->BuildDFSForest(visitedVerts);
 }
 
+/**
+ * @brief Метод побудови лісу пошуку в глибину
+ * @tparam T Заповнювач типу даних
+ * @param visitedVerts Список відвіданих вершин
+ */
 template <typename T>
 void Graph<T>::BuildDFSForest(vector<variant<T, int>>& visitedVerts) {
 
@@ -279,6 +350,12 @@ void Graph<T>::BuildDFSForest(vector<variant<T, int>>& visitedVerts) {
 	}	
 }
 
+/**
+ * @brief Метод пошуку найкоротшого шляху (модифікація хвильового алгоритму)
+ * @tparam T Заповнювач типу даних
+ * @param sVert Початкова вершина
+ * @param eVert Кінцева вершина
+ */
 template <typename T>
 void Graph<T>::MinimumPathBetweenVerts(const variant<T, int>& sVert, const variant<T, int>& eVert) {
 
@@ -325,6 +402,11 @@ void Graph<T>::MinimumPathBetweenVerts(const variant<T, int>& sVert, const varia
 	else visit([](auto&& val, auto&& val2) {cout << ANSI_COLOR_RED << "The path didn't find from " << val << " to " << val2 << ANSI_COLOR_RESET << endl; }, sVert, eVert);
 }
 
+/**
+ * @brief Метод променумерування вершин у порядку обходу в глибину
+ * @tparam T Заповнювач типу даних
+ * @param sVertex Початкова вершина
+ */
 template <typename T>
 void Graph<T>::Task2B(const variant<T, int>& sVertex) {
 
@@ -337,6 +419,9 @@ void Graph<T>::Task2B(const variant<T, int>& sVertex) {
 	for (auto& travel : visitedVerts) {
 		visit([](auto&& val) { cout << val << "->"; }, travel);
 	}cout << endl;
+	for (auto& vertex : this->listAdjacency) {
+		newNameV[vertex.GetVertName()] = vertex.GetVertName();
+	}
 	for (int i = 0; i < visitedVerts.size(); i++) {
 		auto it = find(this->listAdjacency.begin(), this->listAdjacency.end(), visitedVerts[i]);
 		if (it != this->listAdjacency.end()) {
@@ -376,6 +461,12 @@ public:
 	void ShowGraph() { this->graph.ShowVertexes(); }
 };
 
+/**
+ * @brief Метод отримання слів зі словника
+ * @param pathDic Шлях до словника
+ * @param size Розмір слова
+ * @return Знайдені слова зі словника 
+ */
 unordered_set<string> ConvertAtoB::LoadFromDictionary(const string& pathDic, const int& size) {
 
 	ifstream fileDic(pathDic);
@@ -396,6 +487,11 @@ unordered_set<string> ConvertAtoB::LoadFromDictionary(const string& pathDic, con
 	return words;
 }
 
+/**
+ * @brief Метод перетворення слова А у слово B
+ * @param A Слово А
+ * @param B Слово В
+ */
 void ConvertAtoB::MakeTheTransformation(const string& A, const string& B) {
 
 	if (A.size() != B.size()) throw "Error: <A and B sizes aren't equal>";
@@ -407,6 +503,7 @@ void ConvertAtoB::MakeTheTransformation(const string& A, const string& B) {
 	if (itB == words.end()) throw "Error: <The word B is unknown>";
 	cout << "From " << ANSI_COLOR_LIGHTBLUE << A << ANSI_COLOR_RESET << " to " << ANSI_COLOR_GREEN << B << ANSI_COLOR_RESET << endl;
 	this->MakeGraph(A, B, words);
+	cout << "The graph is consist " << ANSI_COLOR_LIGHTBLUE << this->graph.GetAmountVertex() << ANSI_COLOR_RESET << " Verteces" << endl;
 	this->graph.MinimumPathBetweenVerts(A, B);
 }
 
@@ -472,56 +569,205 @@ void ConvertAtoB::MakeGraph(const string& A, const string& B, const unordered_se
 
 int main() {
 
-	/*Graph<int> g(true);
-	g.AddEdge(1, 2, 1);
-	g.AddEdge(1, 3, 1);
-	g.AddEdge(1, 4, 1);
-	g.AddEdge(2, 3, 1);
-	g.AddEdge(2, 5, 1);
-	g.AddEdge(3, 5, 1);
-	g.AddEdge(3, 6, 1);
-	g.AddEdge(4, 3, 1);
-	g.AddEdge(4, 6, 1);
-	g.AddEdge(5, 4, 1);
-	g.AddEdge(5, 6, 1);*/
-	//g.ShowVertexes();
-	
-	/*Graph<string> g2(true);
-	g2.AddEdge("A", "C", 1);
-	g2.AddEdge("A", "F", 1);
-	g2.AddEdge("C", "D", 1);
-	g2.AddEdge("D", "B", 1);
-	g2.AddEdge("E", "F", 1);
-	g2.ShowVertexes();*/
+	srand(time(0));
+	int task = 99, ltask = 99, vtask = 99;
+	bool isOrinted = true;
+	string A, B;
+	Graph<string> g(true), g2(false);
 	ConvertAtoB c;
 
-	try {
-		//g.DepthFirstSearch(1);
-		//g.DepthFirstSearch(5);
-		//g.DepthFirstSearch(4);
-		//g.DepthFirstSearch(2);
-		//g2.DepthFirstSearch("C");
-		//g2.DepthFirstSearchStack("C");
-		//g.DepthFirstSearchStack(1);
-		//g.BreadthFirstSearch(1);
-		//g2.BreadthFirstSearch("A");
-		//g2.MinimumPathBetweenVerts("A", "D");
-		//g2.Task2B("A");
-		
-		//c.MakeTheTransformation("cat", "dog");
-		//c.MakeTheTransformation("doggie", "kitten");
-		//c.MakeTheTransformation("marriage", "superior");
-		//c.MakeTheTransformation("great", "adept");
-		//c.MakeTheTransformation("tree", "grey");
-		//c.MakeTheTransformation("make", "girl");
-		//c.MakeTheTransformation("marital", "thunder");
-		//c.MakeTheTransformation("app", "two");
-		c.MakeTheTransformation("insult", "intake");
-	}
-	catch (const char* err) {
-		cerr << ANSI_COLOR_RED << err  << ANSI_COLOR_RESET << endl;
-	}
-	
+	while (task != 0) {
+		switch (task) {
+		case 1:
+			while (ltask != 0) {
+				switch (ltask) {
+				case 1:
+					g.ClearDataGraph();
+					isOrinted = true;
+					g.AddEdge("A", "B", 1);
+					g.AddEdge("A", "C", 1);
+					g.AddEdge("A", "D", 1);
+					g.AddEdge("B", "E", 1);
+					g.AddEdge("C", "F", 1);
+					g.AddEdge("E", "G", 1);
+					g.AddEdge("F", "G", 1);
+					g.AddEdge("X", "Y", 1);
+					break;
+				case 2:
+					g2.ClearDataGraph();
+					isOrinted = false;
+					g2.AddEdge("A", "B", 1);
+					g2.AddEdge("A", "C", 1);
+					g2.AddEdge("A", "D", 1);
+					g2.AddEdge("B", "E", 1);
+					g2.AddEdge("C", "F", 1);
+					g2.AddEdge("E", "G", 1);
+					g2.AddEdge("F", "G", 1);
+					g2.AddEdge("X", "Y", 1);
+					break;
+				case 3:
+					g.ClearDataGraph();
+					g2.ClearDataGraph();
+					break;
+				case 4:
+					if(isOrinted) g.ShowVertexes();
+					else g2.ShowVertexes();
+					break;
+				case 5:
+					try {
+						if (isOrinted) g.DepthFirstSearch("A");
+						else g2.DepthFirstSearch("A");
+					}
+					catch (const char* err) {
+						cerr << ANSI_COLOR_RED << err << ANSI_COLOR_RESET << endl;
+					}
+					break;
+				case 6:
+					try {
+						if(isOrinted) g.DepthFirstSearchStack("A");
+						else g2.DepthFirstSearchStack("A");
+					}
+					catch (const char* err) {
+						cerr << ANSI_COLOR_RED << err << ANSI_COLOR_RESET << endl;
+					}
+					break;
+				case 7:
+					try {
+						if(isOrinted) g.BreadthFirstSearch("A");
+						else g2.BreadthFirstSearch("A");
+					}
+					catch (const char* err) {
+						cerr << ANSI_COLOR_RED << err << ANSI_COLOR_RESET << endl;
+					}
+					break;
+				}
+				cout << "\n________Work with Graph________" << endl;
+				cout << setw(35) << left << "Build and shoose orinted graph" << " / Enter - 1" << endl;
+				cout << setw(35) << left << "Build and shoose non-orinted graph " << " / Enter - 2" << endl;
+				cout << setw(35) << left << "Clear graph " << " / Enter - 3" << endl;
+				cout << setw(35) << left << "Show Graph " << " / Enter - 4" << endl;
+				cout << setw(35) << left << "Launch DFS" << " / Enter - 5" << endl;
+				cout << setw(35) << left << "Launch DFS by Stack" << " / Enter - 6" << endl;
+				cout << setw(35) << left << "Launch BFS" << " / Enter - 7" << endl;
+				cout << setw(35) << left << "Back " << " / Enter - 0" << endl;
+				if (ltask != 0) {
+					try {
+						cout << "\nChoose the Task: ";
+						cin >> ltask;
+						if (cin.fail()) {
+							cin.clear();
+							cin.ignore(numeric_limits<streamsize>::max(), '\n');
+							throw "Error: <Incorrect Input Data>";
+						}
+					}
+					catch (const char* err) {
+						cerr << endl << err << endl;
+						ltask = 99;
+					}
+				}
+			}
+			break;
+		case 2:
+			while (vtask != 0) {
+				switch (vtask) {
+				case 1:
+					try {
+						cout << "Enter first Vertex : ";
+						cin >> A;
+						cout << "Enter second Vertex : ";
+						cin >> B;
+						if (isOrinted) g.MinimumPathBetweenVerts(A, B);
+						else g2.MinimumPathBetweenVerts(A, B);
+					}
+					catch (const char* err) {
+						cerr << ANSI_COLOR_RED << err << ANSI_COLOR_RESET << endl;
+					}
+					break;
+				case 2:
+					try {
+						cout << "Enter start Vertex : ";
+						cin >> A;
+						if (isOrinted) g.Task2B(A);
+						else g2.Task2B(A);
+					}
+					catch (const char* err) {
+						cerr << ANSI_COLOR_RED << err << ANSI_COLOR_RESET << endl;
+					}
+					break;
+				case 3:
+					try {
+						cout << "Enter first Word : ";
+						cin >> A;
+						cout << "Enter second Word : ";
+						cin >> B;
+						c.MakeTheTransformation(A, B);
+						cout << "Show the Graph? 1/0 :";
+						int k;
+						cin >> k;
+						if (k == 1) c.ShowGraph();
+					}
+					catch (const char* err) {
+						cerr << ANSI_COLOR_RED << err << ANSI_COLOR_RESET << endl;
+					}
+					break;
+				}
+				cout << "\n________Work with Lab Task var 17________" << endl;
+				cout << setw(35) << left << "Find min path from A to B (G) " << " / Enter - 1" << endl;
+				cout << setw(35) << left << "Number the vertices by DFS (B) " << " / Enter - 2" << endl;
+				cout << setw(35) << left << "Convert word from A to B " << " / Enter - 3" << endl;
+				cout << setw(35) << left << "Back " << " / Enter - 0" << endl;
+				if (vtask != 0) {
+					try {
+						cout << "\nChoose the Task: ";
+						cin >> vtask;
+						if (cin.fail()) {
+							cin.clear();
+							cin.ignore(numeric_limits<streamsize>::max(), '\n');
+							throw "Error: <Incorrect Input Data>";
+						}
+					}
+					catch (const char* err) {
+						cerr << endl << err << endl;
+						vtask = 99;
+					}
+				}				
+			}
+			break;
+		case 0:
+			break;
+		}
+		cout << "\n________________Menu of action________________" << endl;
+		cout << setw(35) << left << "Work with graph " << " / Enter - 1" << endl;
+		cout << setw(35) << left << "Work with Lab Task var 17  " << " / Enter - 2" << endl;
+		cout << setw(35) << left << "Exit " << " / Enter - 0" << endl;
 
+		if (task != 0) {
+			ltask = 99;
+			vtask = 99;
+			try {
+				cout << "\nChoose the Task: ";
+				cin >> task;
+				if (cin.fail()) {
+					cin.clear();
+					cin.ignore(numeric_limits<streamsize>::max(), '\n');
+					throw "Error: <Incorrect Input Data>";
+				}
+			}
+			catch (const char* err) {
+				cerr << endl << err << endl;
+				task = 99;
+			}
+		}
+	}
+
+	//c.MakeTheTransformation("cat", "dog");
+	//c.MakeTheTransformation("doggie", "kitten");
+	//c.MakeTheTransformation("marriage", "superior");
+	//c.MakeTheTransformation("great", "adept");
+	//c.MakeTheTransformation("tree", "grey");
+	//c.MakeTheTransformation("make", "girl");
+	//c.MakeTheTransformation("marital", "thunder");
+	//c.MakeTheTransformation("app", "two");
+	//c.MakeTheTransformation("gap", "bag");
 	return 0;
 }
