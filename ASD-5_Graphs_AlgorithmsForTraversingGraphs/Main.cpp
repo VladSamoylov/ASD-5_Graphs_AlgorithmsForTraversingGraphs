@@ -419,8 +419,14 @@ void Graph<T>::Task2B(const variant<T, int>& sVertex) {
 	for (auto& travel : visitedVerts) {
 		visit([](auto&& val) { cout << val << "->"; }, travel);
 	}cout << endl;
-	for (auto& vertex : this->listAdjacency) {
-		newNameV[vertex.GetVertName()] = vertex.GetVertName();
+	for (auto& v : this->listAdjacency) {
+		newNameV[v.GetVertName()] = v.GetVertName();
+		vector<variant<T, int>> neighbours = v.GetNeighbor();
+		for (auto& neighbour : neighbours) {
+			auto itV = find(visitedVerts.begin(), visitedVerts.end(), v.GetVertName());
+			auto itN = find(visitedVerts.begin(), visitedVerts.end(), neighbour);
+			if (itV != visitedVerts.end() && itN != visitedVerts.end()) edgeN++;
+		}
 	}
 	for (int i = 0; i < visitedVerts.size(); i++) {
 		auto it = find(this->listAdjacency.begin(), this->listAdjacency.end(), visitedVerts[i]);
@@ -435,7 +441,6 @@ void Graph<T>::Task2B(const variant<T, int>& sVertex) {
 		}
 		if (newNameV.find(vertex.GetVertName()) != newNameV.end()) { 
 			vertex.SetVertName(newNameV[vertex.GetVertName()]);
-			edgeN += neighbours.size();
 		}
 		vertex.SetNameNeighbor(neighbours);
 	}
@@ -443,10 +448,11 @@ void Graph<T>::Task2B(const variant<T, int>& sVertex) {
 	cout << "Amount verteces of Graph: " << visitedVerts.size() << endl;
 	if (!this->isOriented) edgeN /= 2;
 	cout << "Amount edge of Graph: " << edgeN << endl;	
-	//int density = edgeN / visitedVerts.size();
-	int density = 1;
-	density = edgeN / (visitedVerts.size() * (visitedVerts.size() - 1));
-	if (!isOriented) density = 2 * edgeN / (visitedVerts.size() * (visitedVerts.size() - 1));
+	//double density = edgeN / visitedVerts.size();
+	double density = 1;
+	if (visitedVerts.size() <= 1) throw "Error: <The density cannot be calculated (not enough vertices)>";
+	density = static_cast<double>(edgeN) / (visitedVerts.size() * (visitedVerts.size() - 1));
+	if (!isOriented) density = 2.0 * static_cast<double>(edgeN) / (visitedVerts.size() * (visitedVerts.size() - 1));
 	cout << "The graph density : " << density << endl;
 }
 
@@ -588,10 +594,11 @@ int main() {
 					g.AddEdge("A", "C", 1);
 					g.AddEdge("A", "D", 1);
 					g.AddEdge("B", "E", 1);
+					g.AddEdge("D", "E", 1);
 					g.AddEdge("C", "F", 1);
 					g.AddEdge("E", "G", 1);
 					g.AddEdge("F", "G", 1);
-					g.AddEdge("X", "Y", 1);
+					g.AddEdge("Y", "X", 1);
 					break;
 				case 2:
 					g2.ClearDataGraph();
