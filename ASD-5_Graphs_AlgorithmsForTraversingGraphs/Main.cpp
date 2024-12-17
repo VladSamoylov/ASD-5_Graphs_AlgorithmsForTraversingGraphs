@@ -513,6 +513,12 @@ void ConvertAtoB::MakeTheTransformation(const string& A, const string& B) {
 	this->graph.MinimumPathBetweenVerts(A, B);
 }
 
+/**
+ * @brief Метод побудови графа, де вершини з'єднуються тільки у тому випадку, якщо з одного слова можна отримати інше 
+ * @param A Слово А
+ * @param B Слово В
+ * @param words Знайдені слова зі словника 
+ */
 void ConvertAtoB::MakeGraph(const string& A, const string& B, const unordered_set<string>& words) {
 	
 	string newWord = A, oldWord = A;
